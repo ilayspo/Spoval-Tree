@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173d53">
+  <meta name="description" content="עץ משפחת ספובל — מגלים את הקשרים בין הדורות">
+  <title>עץ משפחת ספובל</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23173d53'/%3E%3Cpath d='M32 53V28M32 37 18 23M32 35l13-15' stroke='%23d6b477' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='18' cy='20' r='8' fill='%23f4e6c9'/%3E%3Ccircle cx='45' cy='17' r='8' fill='%23f4e6c9'/%3E%3Ccircle cx='32' cy='23' r='8' fill='%23f4e6c9'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./family-data.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">✦</span><span>משפחת ספובל</span></div>
+    <span class="header-label">עץ המשפחה</span>
+  </header>
+  <main>
+    <section class="intro">
+      <div>
+        <p class="eyebrow">הסיפור שלנו, בין הדורות</p>
+        <h1>עץ המשפחה</h1>
+        <p class="intro-copy">בחרו אדם בעץ כדי לגלות את הקשרים המשפחתיים סביבו.</p>
+      </div>
+      <div class="counter" aria-label="מספר בני המשפחה"><strong id="person-count">—</strong><span>בני משפחה בעץ</span></div>
+    </section>
+    <section class="workspace" aria-label="חיפוש וצפייה בעץ המשפחה">
+      <div class="toolbar">
+        <div class="search-area">
+          <label class="search-label" for="search">מחפשים מישהו במשפחה?</label>
+          <div class="search-wrap">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input id="search" type="search" placeholder="הקלידו שם פרטי או משפחה" autocomplete="off" aria-controls="search-results" aria-expanded="false">
+            <div id="search-results" class="results" role="listbox" hidden></div>
+          </div>
+        </div>
+        <button id="reset" class="reset-button" type="button">חזרה לתחילת העץ</button>
+      </div>
+      <div class="focus-bar"><span class="focus-label">כרגע במרכז</span><strong id="focus-name">—</strong><span id="focus-info"></span></div>
+      <p class="hint">לחצו על שם כלשהו כדי לעבור לענף שלו. אפשר לגלול לצדדים בין בני אותו דור.</p>
+      <div class="tree-scroll" id="tree-scroll" tabindex="0" aria-label="עץ המשפחה, אפשר לגלול לצדדים">
+        <div id="tree" class="tree" aria-live="polite"></div>
+      </div>
+    </section>
+    <p class="footer-note">מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.</p>
+  </main>
+</body>
+</html>
