@@ -1,12 +1,12 @@
 (async () => {
   const data = await window.loadFamilyData();
-  if (!data || !Array.isArray(data.people)) return;
+  if (!data || !Array.isArray(data.people) || !data.people.length) { document.getElementById('person-count').textContent = '—'; document.getElementById('focus-name').textContent = 'הנתונים אינם זמינים כרגע. נסו לרענן את העמוד.'; return; }
 
   const people = new Map(data.people.map(person => [person.id, person]));
   let language = localStorage.getItem('family-language') === 'ru' ? 'ru' : 'he';
   const labels = {
-    he: { brand:'משפחת ספובל', treeTitle:'עץ המשפחה', story:'הסיפור שלנו, בין הדורות', intro:'מכירים את המשפחה, אדם אחרי אדם.', count:'בני משפחה בעץ', search:'מחפשים מישהו במשפחה?', placeholder:'הקלידו שם פרטי או משפחה', reset:'חזרה להתחלה', card:'כרטיס משפחתי', branches:'ענפי המשפחה', diagram:'תרשים העץ', viewing:'מסתכלים על', hint:'לחצו על שם כדי לעבור לענף שלו. אפשר לגלול או להגדיל בתוך התרשים.', footer:'מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.', admin:'ניהול', grandparents:'דור הסבים והסבתות', parentsGeneration:'דור ההורים', central:'במרכז המשפחה · בני זוג ואחים', childrenGeneration:'דור הילדים', grandchildren:'דור הנכדים', focus:'במרכז העץ', memory:'לזכרו/ה', partner:'בן/בת זוג', explore:'למעבר לענף', viewFamily:'לצפייה במשפחה', familyOf:'המשפחה של', parents:'הורים', partners:'בני ובנות זוג', siblings:'אחים ואחיות', children:'ילדים', noRelations:'אין עדיין קשרים נוספים לאדם הזה בעץ.', back:'→ חזרה אל ', fromFamily:'יוצאים מהמשפחה של', chooseBranch:'בחרו ענף, ואז אדם להמשך המסע.', branchOf:'הענף של ', previous:'הדור הקודם והמשפחה שלו', familyWith:'המשפחה עם ', shared:'בן/בת זוג והילדים המשותפים', next:'הדור הבא', nextDescription:'ילדים והמשך המשפחה', siblingsDescription:'המשפחות שצמחו מאותו דור', noBranches:'אין עדיין ענפים נוספים לאדם הזה בעץ. אפשר לחפש מישהו אחר למעלה.', notFound:'לא מצאנו שם כזה בעץ', zoomIn:'הגדלה', zoomOut:'הקטנה', zoomReset:'איפוס תצוגה', relation:'קשר משפחתי' },
-    ru: { brand:'Семья Споваль', treeTitle:'Семейное дерево', story:'Наша история сквозь поколения', intro:'Знакомимся с семьёй, человек за человеком.', count:'человек в дереве', search:'Кого вы ищете?', placeholder:'Введите имя или фамилию', reset:'К началу', card:'Семейная карточка', branches:'Ветви семьи', diagram:'Схема дерева', viewing:'Сейчас смотрим', hint:'Нажмите на имя, чтобы перейти к его ветви. Схему можно прокручивать и масштабировать.', footer:'Знаете о связи, которую нужно исправить? Расскажите Илаю.', admin:'Управление', grandparents:'Поколение дедушек и бабушек', parentsGeneration:'Поколение родителей', central:'В центре · партнёры и братья/сёстры', childrenGeneration:'Поколение детей', grandchildren:'Поколение внуков', focus:'В центре дерева', memory:'Светлая память', partner:'Партнёр', explore:'Перейти к ветви', viewFamily:'Посмотреть семью', familyOf:'Семья:', parents:'Родители', partners:'Партнёры', siblings:'Братья и сёстры', children:'Дети', noRelations:'В дереве пока нет других связей для этого человека.', back:'← Назад к ', fromFamily:'Ветви семьи:', chooseBranch:'Выберите ветвь, затем человека.', branchOf:'Ветвь: ', previous:'Предыдущее поколение и его семья', familyWith:'Семья с ', shared:'Партнёр и общие дети', next:'Следующее поколение', nextDescription:'Дети и продолжение семьи', siblingsDescription:'Семьи этого поколения', noBranches:'Других ветвей пока нет. Найдите другого человека через поиск.', notFound:'Такого имени нет в дереве', zoomIn:'Увеличить', zoomOut:'Уменьшить', zoomReset:'Сбросить масштаб', relation:'Семейная связь' }
+    he: { brand:'משפחת רובין', treeTitle:'עץ המשפחה של משפחת רובין', story:'הסיפור שלנו, בין הדורות', intro:'מכירים את המשפחה, אדם אחרי אדם.', count:'בני משפחה בעץ', search:'מחפשים מישהו במשפחה?', placeholder:'הקלידו שם פרטי או משפחה', reset:'חזרה לראש העץ', card:'כרטיס משפחתי', branches:'ענפי המשפחה', diagram:'תרשים העץ', viewing:'מסתכלים על', hint:'לחצו על שם כדי לעבור לענף שלו. אפשר לגלול או להגדיל בתוך התרשים.', footer:'מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.', admin:'ניהול', grandparents:'דור הסבים והסבתות', parentsGeneration:'דור ההורים', central:'במרכז המשפחה · קשרים ואחים', childrenGeneration:'דור הילדים', grandchildren:'דור הנכדים', focus:'במרכז העץ', memory:'לזכרו/ה', partner:'קשר הורי/זוגי', explore:'למעבר לענף', viewFamily:'לצפייה במשפחה', familyOf:'המשפחה של', parents:'הורים', partners:'זוגיות והורות משותפת', siblings:'אחים ואחיות', children:'ילדים', noRelations:'אין עדיין קשרים נוספים לאדם הזה בעץ.', back:'→ חזרה אל ', fromFamily:'יוצאים מהמשפחה של', chooseBranch:'בחרו ענף, ואז אדם להמשך המסע.', branchOf:'הענף של ', previous:'הדור הקודם והמשפחה שלו', familyWith:'המשפחה עם ', shared:'בן/בת זוג והילדים המשותפים', next:'הדור הבא', nextDescription:'ילדים והמשך המשפחה', siblingsDescription:'המשפחות שצמחו מאותו דור', noBranches:'אין עדיין ענפים נוספים לאדם הזה בעץ. אפשר לחפש מישהו אחר למעלה.', notFound:'לא מצאנו שם כזה בעץ', zoomIn:'הגדלה', zoomOut:'הקטנה', zoomReset:'איפוס תצוגה', relation:'קשר משפחתי', birth:'נולד/ה', death:'נפטר/ה', notKnown:'לא צוין', current:'קשר נוכחי', past:'קשר קודם', married:'נשואים', partnered:'בני זוג', divorced:'גרושים', separated:'פרודים', former:'קשר קודם', unknown:'סוג קשר לא ידוע', viewsLabel:'איך להציג את המשפחה?' },
+    ru: { brand:'Семья Рубин', treeTitle:'Семейное дерево семьи Рубин', story:'Наша история сквозь поколения', intro:'Знакомимся с семьёй, человек за человеком.', count:'человек в дереве', search:'Кого вы ищете?', placeholder:'Введите имя или фамилию', reset:'К началу дерева', card:'Семейная карточка', branches:'Ветви семьи', diagram:'Схема дерева', viewing:'Сейчас смотрим', hint:'Нажмите на имя, чтобы перейти к его ветви. Схему можно прокручивать и масштабировать.', footer:'Знаете о связи, которую нужно исправить? Расскажите Илаю.', admin:'Управление', grandparents:'Поколение дедушек и бабушек', parentsGeneration:'Поколение родителей', central:'В центре · связи и братья/сёстры', childrenGeneration:'Поколение детей', grandchildren:'Поколение внуков', focus:'В центре дерева', memory:'Светлая память', partner:'Семейная связь', explore:'Перейти к ветви', viewFamily:'Посмотреть семью', familyOf:'Семья:', parents:'Родители', partners:'Партнёры и общие родители', siblings:'Братья и сёстры', children:'Дети', noRelations:'В дереве пока нет других связей для этого человека.', back:'← Назад к ', fromFamily:'Ветви семьи:', chooseBranch:'Выберите ветвь, затем человека.', branchOf:'Ветвь: ', previous:'Предыдущее поколение и его семья', familyWith:'Семья с ', shared:'Партнёр и общие дети', next:'Следующее поколение', nextDescription:'Дети и продолжение семьи', siblingsDescription:'Семьи этого поколения', noBranches:'Других ветвей пока нет. Найдите другого человека через поиск.', notFound:'Такого имени нет в дереве', zoomIn:'Увеличить', zoomOut:'Уменьшить', zoomReset:'Сбросить масштаб', relation:'Семейная связь', birth:'Дата рождения', death:'Дата смерти', notKnown:'Не указана', current:'Сейчас вместе', past:'Прежняя связь', married:'В браке', partnered:'Партнёры', divorced:'В разводе', separated:'Разошлись', former:'Прежняя связь', unknown:'Тип связи неизвестен', viewsLabel:'Как показать семью?' }
   };
   const t = key => labels[language][key];
   const nameOf = id => people.get(id)?.['name_' + language] || people.get(id)?.name_he || '';
@@ -18,13 +18,45 @@
     return node;
   };
   const families = data.families;
+  const icons = {
+    parents:'<circle cx="8" cy="7" r="2.3"/><circle cx="16" cy="7" r="2.3"/><path d="M3 19v-3a5 5 0 0 1 10 0v3M11 19v-3a5 5 0 0 1 10 0v3"/>',
+    children:'<circle cx="12" cy="6" r="2.5"/><path d="M7 21v-5a5 5 0 0 1 10 0v5M4 13l3-2m13 2-3-2"/>',
+    partner:'<circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/>',
+    divorced:'<path d="M3 15a5 5 0 0 0 8-7M14 8a5 5 0 0 1 7 7M11 4l2 16"/>',
+    memorial:'<path d="M8 20h8M9 17h6v3H9zM12 5c-2 3-1 4 0 5 1-1 2-2 0-5ZM12 10v7"/>',
+    siblings:'<path d="M4 20v-3a4 4 0 0 1 8 0v3m0 0v-3a4 4 0 0 1 8 0v3"/><circle cx="8" cy="8" r="2.5"/><circle cx="16" cy="8" r="2.5"/>'
+  };
+  function icon(kind, className='') {
+    const holder=document.createElement('span'); holder.className='family-icon '+className; holder.setAttribute('aria-hidden','true');
+    holder.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${icons[kind]||icons.children}</svg>`;
+    return holder;
+  }
+  const formatDate = value => {
+    if (!value) return t('notKnown');
+    const [year,month,day] = value.split('-');
+    return day ? `${day}.${month}.${year}` : month ? `${month}.${year}` : year;
+  };
+  const statusOf = (a,b) => families.find(f => f.parents.includes(a) && f.parents.includes(b));
+  const statusText = family => {
+    if (!family) return t('unknown');
+    const label=t(family.relationship_status||'unknown');
+    return family.is_current===null || family.is_current===undefined ? label : `${label} · ${t(family.is_current?'current':'past')}`;
+  };
+  const statusIcon = family => ['divorced','separated','former'].includes(family?.relationship_status) ? 'divorced' : ['married','partnered'].includes(family?.relationship_status) ? 'partner' : 'parents';
+
   const search = document.getElementById('search');
   const results = document.getElementById('search-results');
   const tree = document.getElementById('tree');
   const scroll = document.getElementById('tree-scroll');
   const cardView = document.getElementById('card-view');
   const branchesView = document.getElementById('branches-view');
-  const initialId = people.has('I1') ? 'I1' : data.people[0]?.id;
+  const depth = (id, visited=new Set()) => {
+    if (visited.has(id)) return 0;
+    const next=new Set([...visited,id]);
+    return 1+Math.max(0,...families.filter(f=>f.parents.includes(id)).flatMap(f=>f.children).map(child=>depth(child,next)));
+  };
+  const roots=data.people.filter(person=>!families.some(f=>f.children.includes(person.id))).sort((a,b)=>depth(b.id)-depth(a.id)||a.id.localeCompare(b.id));
+  const initialId = roots[0]?.id || data.people[0]?.id;
   let focusId = null;
   let activeView = 'card';
   let trail = [];
@@ -50,8 +82,9 @@
     const name = document.createElement('strong');
     name.textContent = nameOf(id);
     const caption = document.createElement('small');
-    caption.textContent = id === focusId ? t('focus') : person.deceased ? t('memory') : kind === 'partner' ? t('partner') : t('explore');
+    caption.textContent = id === focusId ? t('focus') : person.deceased ? t('memory') : kind === 'partner' ? statusText(statusOf(focusId,id)) : t('explore');
     button.append(photo(id), name, caption);
+    if (person.deceased) button.append(icon('memorial','memorial-badge'));
     button.addEventListener('click', () => select(id, true, true));
     return button;
   }
@@ -145,6 +178,7 @@
     const name = element('strong', '', nameOf(id));
     const meta = element('span', 'relative-meta', subtitle || (people.get(id).deceased ? t('memory') : t('viewFamily')));
     button.append(photo(id), name, meta, element('span', 'relative-arrow', language === 'he' ? '←' : '→'));
+    if (people.get(id).deceased) button.append(icon('memorial','memorial-badge'));
     button.addEventListener('click', () => select(id, true, true));
     return button;
   }
@@ -153,10 +187,10 @@
     if (!ids.length) return null;
     const box = element('section', 'relation-section');
     const heading = element('div', 'relation-heading');
-    const icon = { [t('parents')]:'♧', [t('partners')]:'♡', [t('siblings')]:'◇', [t('children')]:'✦' }[title] || '•';
-    heading.append(element('span', 'relation-icon', icon), element('h3', '', title), element('span', 'relation-count', String(ids.length)));
+    const relationIcon = { [t('parents')]:'parents', [t('partners')]:'parents', [t('siblings')]:'siblings', [t('children')]:'children' }[title] || 'children';
+    heading.append(icon(relationIcon,'relation-icon'), element('h3', '', title), element('span', 'relation-count', String(ids.length)));
     const list = element('div', 'relative-list');
-    for (const id of ids) list.append(personButton(id, subtitle));
+    for (const id of ids) { const card=personButton(id, title===t('partners') ? statusText(statusOf(focusId,id)) : subtitle); if (title===t('partners')) card.append(icon(statusIcon(statusOf(focusId,id)),'status-badge')); list.append(card); }
     box.append(heading, list);
     return box;
   }
@@ -184,9 +218,11 @@
     cardView.append(navigation());
     const hero = element('div', 'person-hero');
     hero.append(photo(id, 'hero'), element('span', 'hero-kicker', t('familyOf')), element('h2', '', nameOf(id)));
-    const relationship = partners(id).length ? element('span', 'relation-chip', '♡ ' + t('relation')) : null;
-    if (relationship) hero.append(relationship);
-    if (people.get(id).deceased) hero.append(element('span', 'memory-label', t('memory')));
+    if (people.get(id).deceased) { const badge=element('span','memory-label',t('memory')); badge.prepend(icon('memorial')); hero.append(badge); }
+    const dates=element('div','person-dates');
+    dates.append(element('span','',`${t('birth')}: ${formatDate(people.get(id).birth_date)}`));
+    if (people.get(id).deceased || people.get(id).death_date) dates.append(element('span','',`${t('death')}: ${formatDate(people.get(id).death_date)}`));
+    hero.append(dates);
     cardView.append(hero);
     const relations = element('div', 'relations-grid');
     for (const group of [
@@ -236,7 +272,7 @@
     const partnerIds = sort(partners(id));
     for (const partnerId of partnerIds) {
       const next = sort(unique([partnerId, ...children(id).filter(childId => ownFamilies(id).some(family => family.parents.includes(partnerId) && family.children.includes(childId)))]));
-      addBranch('partner-' + partnerId, t('familyWith') + nameOf(partnerId), t('shared'), next);
+      addBranch('partner-' + partnerId, t('familyWith') + nameOf(partnerId), statusText(statusOf(id,partnerId)) + ' · ' + t('shared'), next, statusText(statusOf(id,partnerId)));
     }
     const ownChildren = sort(children(id));
     const listedChildren = new Set(ownFamilies(id).filter(family => family.parents.some(parentId => partnerIds.includes(parentId))).flatMap(family => family.children));
