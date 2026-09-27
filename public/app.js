@@ -186,7 +186,9 @@
     const trigger = element('button', 'branch-trigger');
     trigger.type = 'button';
     trigger.setAttribute('aria-expanded', String(openBranch === key));
-    trigger.append(element('span', 'folder-symbol', '⌁'));
+    const symbol = element('span', 'folder-symbol', '▤');
+    symbol.setAttribute('aria-hidden', 'true');
+    trigger.append(symbol);
     const wording = element('span', 'branch-wording');
     wording.append(element('strong', '', title), element('small', '', description));
     trigger.append(wording, element('span', 'folder-count', String(ids.length)), element('span', 'folder-chevron', openBranch === key ? '⌃' : '⌄'));
