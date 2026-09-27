@@ -8,7 +8,6 @@ create table if not exists public.family_people (
   name_ru text not null check (length(trim(name_ru)) > 0),
   deceased boolean not null default false,
   photo_path text,
-  notes text not null default '',
   updated_at timestamptz not null default now()
 );
 create table if not exists public.family_units (

@@ -42,7 +42,7 @@
   function edit(id) {
     selected=id; const person=profiles.find(p=>p.id===id); const form=$('person-form'); form.hidden=false;
     form.elements.id.value=person?.id || '';
-    for (const field of ['name_he','name_ru','notes']) form.elements[field].value=person?.[field] || '';
+    for (const field of ['name_he','name_ru']) form.elements[field].value=person?.[field] || '';
     form.elements.deceased.checked=!!person?.deceased;
     $('editor-title').textContent=person ? 'עריכת פרופיל' : 'הוספת אדם';
     $('photo-input').value=''; const preview=$('photo-preview'); preview.hidden=!person?.photo_path;
@@ -69,7 +69,7 @@
         photo_path=id+'/'+crypto.randomUUID()+'.'+ext;
         await api('/storage/v1/object/family-photos/'+photo_path,{method:'POST',body:file,headers:{'Content-Type':file.type}});
       }
-      const record={id,name_he:f.elements.name_he.value.trim(),name_ru:f.elements.name_ru.value.trim(),deceased:f.elements.deceased.checked,notes:f.elements.notes.value.trim(),photo_path,updated_at:new Date().toISOString()};
+      const record={id,name_he:f.elements.name_he.value.trim(),name_ru:f.elements.name_ru.value.trim(),deceased:f.elements.deceased.checked,photo_path,updated_at:new Date().toISOString()};
       await api('/rest/v1/family_people'+(existing?'?id=eq.'+encodeURIComponent(id):''), {method:existing?'PATCH':'POST',body:JSON.stringify(existing?Object.fromEntries(Object.entries(record).filter(([key])=>key!=='id')):record),headers:{Prefer:'return=minimal'}});
       if (existing) Object.assign(existing,record); else profiles.push(record);
       edit(id); status('הפרופיל נשמר. התמונה והשם מופיעים בעץ.');
