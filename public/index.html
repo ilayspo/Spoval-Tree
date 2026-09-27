@@ -8,51 +8,53 @@
   <title>עץ משפחת ספובל</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23173d53'/%3E%3Cpath d='M32 53V28M32 37 18 23M32 35l13-15' stroke='%23d6b477' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='18' cy='20' r='8' fill='%23f4e6c9'/%3E%3Ccircle cx='45' cy='17' r='8' fill='%23f4e6c9'/%3E%3Ccircle cx='32' cy='23' r='8' fill='%23f4e6c9'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="./style.css">
+  <script defer src="./config.js"></script>
   <script defer src="./family-data.js"></script>
+  <script defer src="./data-loader.js"></script>
   <script defer src="./app.js"></script>
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="brand-mark" aria-hidden="true">✦</span><span>משפחת ספובל</span></div>
-    <span class="header-label">עץ המשפחה</span>
+    <div class="brand"><span class="brand-mark" aria-hidden="true">✦</span><span data-i18n="brand">משפחת ספובל</span></div>
+    <div class="header-actions"><div class="language-switch" role="group" aria-label="שפה / Язык"><button type="button" data-language="he" aria-pressed="true">עברית</button><button type="button" data-language="ru" aria-pressed="false">Русский</button></div><a class="admin-link" href="./admin.html" data-i18n="admin">ניהול</a></div>
   </header>
   <main>
     <section class="intro">
       <div>
-        <p class="eyebrow">הסיפור שלנו, בין הדורות</p>
-        <h1>עץ המשפחה</h1>
-        <p class="intro-copy">מכירים את המשפחה, אדם אחרי אדם.</p>
+        <p class="eyebrow" data-i18n="story">הסיפור שלנו, בין הדורות</p>
+        <h1 data-i18n="treeTitle">עץ המשפחה</h1>
+        <p class="intro-copy" data-i18n="intro">מכירים את המשפחה, אדם אחרי אדם.</p>
       </div>
-      <div class="counter" aria-label="מספר בני המשפחה"><strong id="person-count">—</strong><span>בני משפחה בעץ</span></div>
+      <div class="counter" aria-label="מספר בני המשפחה"><strong id="person-count">—</strong><span data-i18n="count">בני משפחה בעץ</span></div>
     </section>
     <section class="workspace" aria-label="חיפוש וצפייה בעץ המשפחה">
       <div class="toolbar">
         <div class="search-area">
-          <label class="search-label" for="search">מחפשים מישהו במשפחה?</label>
+          <label class="search-label" for="search" data-i18n="search">מחפשים מישהו במשפחה?</label>
           <div class="search-wrap">
             <span class="search-icon" aria-hidden="true">⌕</span>
             <input id="search" type="search" placeholder="הקלידו שם פרטי או משפחה" autocomplete="off" aria-controls="search-results" aria-expanded="false">
             <div id="search-results" class="results" role="listbox" hidden></div>
           </div>
         </div>
-        <button id="reset" class="reset-button" type="button">חזרה להתחלה</button>
+        <button id="reset" class="reset-button" type="button" data-i18n="reset">חזרה להתחלה</button>
       </div>
       <div class="view-switch" role="tablist" aria-label="בחירת דרך צפייה במשפחה">
-        <button id="tab-card" class="view-tab" role="tab" aria-selected="true" aria-controls="panel-card" type="button" data-view="card">כרטיס משפחתי</button>
-        <button id="tab-branches" class="view-tab" role="tab" aria-selected="false" aria-controls="panel-branches" type="button" data-view="branches">ענפי המשפחה</button>
-        <button id="tab-tree" class="view-tab" role="tab" aria-selected="false" aria-controls="panel-tree" type="button" data-view="tree">תרשים העץ</button>
+        <button id="tab-card" class="view-tab" role="tab" aria-selected="true" aria-controls="panel-card" type="button" data-view="card" data-i18n="card">כרטיס משפחתי</button>
+        <button id="tab-branches" class="view-tab" role="tab" aria-selected="false" aria-controls="panel-branches" type="button" data-view="branches" data-i18n="branches">ענפי המשפחה</button>
+        <button id="tab-tree" class="view-tab" role="tab" aria-selected="false" aria-controls="panel-tree" type="button" data-view="tree" data-i18n="diagram">תרשים העץ</button>
       </div>
-      <div class="focus-bar"><span class="focus-label">מסתכלים על</span><strong id="focus-name">—</strong><span id="focus-info"></span></div>
+      <div class="focus-bar"><span class="focus-label" data-i18n="viewing">מסתכלים על</span><strong id="focus-name">—</strong><span id="focus-info"></span></div>
       <section id="panel-card" class="view-panel" role="tabpanel" aria-labelledby="tab-card"><div id="card-view" aria-live="polite"></div></section>
       <section id="panel-branches" class="view-panel" role="tabpanel" aria-labelledby="tab-branches" hidden><div id="branches-view" aria-live="polite"></div></section>
       <section id="panel-tree" class="view-panel" role="tabpanel" aria-labelledby="tab-tree" hidden>
-        <p class="hint">לחצו על שם כדי לעבור לענף שלו. אפשר לגלול לצדדים בין בני אותו דור.</p>
+        <div class="diagram-toolbar"><p class="hint" data-i18n="hint">לחצו על שם כדי לעבור לענף שלו. אפשר לגלול או להגדיל בתוך התרשים.</p><div class="zoom-controls" role="group" aria-label="זום התרשים"><button id="zoom-out" type="button" aria-label="הקטנה">−</button><output id="zoom-value">100%</output><button id="zoom-in" type="button" aria-label="הגדלה">+</button><button id="zoom-reset" type="button" aria-label="איפוס תצוגה">⤾</button></div></div>
         <div class="tree-scroll" id="tree-scroll" tabindex="0" aria-label="עץ המשפחה, אפשר לגלול לצדדים">
-          <div id="tree" class="tree" aria-live="polite"></div>
+          <div id="tree-zoom"><div id="tree" class="tree" aria-live="polite"></div></div>
         </div>
       </section>
     </section>
-    <p class="footer-note">מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.</p>
+    <p class="footer-note" data-i18n="footer">מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.</p>
   </main>
 </body>
 </html>
