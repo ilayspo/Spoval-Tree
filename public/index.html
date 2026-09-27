@@ -21,7 +21,7 @@
       <div>
         <p class="eyebrow">הסיפור שלנו, בין הדורות</p>
         <h1>עץ המשפחה</h1>
-        <p class="intro-copy">בחרו אדם בעץ כדי לגלות את הקשרים המשפחתיים סביבו.</p>
+        <p class="intro-copy">מכירים את המשפחה, אדם אחרי אדם.</p>
       </div>
       <div class="counter" aria-label="מספר בני המשפחה"><strong id="person-count">—</strong><span>בני משפחה בעץ</span></div>
     </section>
@@ -37,11 +37,20 @@
         </div>
         <button id="reset" class="reset-button" type="button">חזרה לתחילת העץ</button>
       </div>
-      <div class="focus-bar"><span class="focus-label">כרגע במרכז</span><strong id="focus-name">—</strong><span id="focus-info"></span></div>
-      <p class="hint">לחצו על שם כלשהו כדי לעבור לענף שלו. אפשר לגלול לצדדים בין בני אותו דור.</p>
-      <div class="tree-scroll" id="tree-scroll" tabindex="0" aria-label="עץ המשפחה, אפשר לגלול לצדדים">
-        <div id="tree" class="tree" aria-live="polite"></div>
+      <div class="view-switch" role="tablist" aria-label="בחירת דרך צפייה במשפחה">
+        <button id="tab-card" class="view-tab" role="tab" aria-selected="true" aria-controls="panel-card" type="button" data-view="card">כרטיס משפחתי</button>
+        <button id="tab-branches" class="view-tab" role="tab" aria-selected="false" aria-controls="panel-branches" type="button" data-view="branches">ענפי המשפחה</button>
+        <button id="tab-tree" class="view-tab" role="tab" aria-selected="false" aria-controls="panel-tree" type="button" data-view="tree">תרשים העץ</button>
       </div>
+      <div class="focus-bar"><span class="focus-label">מסתכלים על</span><strong id="focus-name">—</strong><span id="focus-info"></span></div>
+      <section id="panel-card" class="view-panel" role="tabpanel" aria-labelledby="tab-card"><div id="card-view" aria-live="polite"></div></section>
+      <section id="panel-branches" class="view-panel" role="tabpanel" aria-labelledby="tab-branches" hidden><div id="branches-view" aria-live="polite"></div></section>
+      <section id="panel-tree" class="view-panel" role="tabpanel" aria-labelledby="tab-tree" hidden>
+        <p class="hint">לחצו על שם כדי לעבור לענף שלו. אפשר לגלול לצדדים בין בני אותו דור.</p>
+        <div class="tree-scroll" id="tree-scroll" tabindex="0" aria-label="עץ המשפחה, אפשר לגלול לצדדים">
+          <div id="tree" class="tree" aria-live="polite"></div>
+        </div>
+      </section>
     </section>
     <p class="footer-note">מכירים קשר שצריך לתקן? ספרו לעילאי כדי שנעדכן את העץ.</p>
   </main>

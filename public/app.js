@@ -8,8 +8,13 @@
   const results = document.getElementById('search-results');
   const tree = document.getElementById('tree');
   const scroll = document.getElementById('tree-scroll');
+  const cardView = document.getElementById('card-view');
+  const branchesView = document.getElementById('branches-view');
   const initialId = people.has('I1') ? 'I1' : data.people[0]?.id;
   let focusId = null;
+  let activeView = 'card';
+  let trail = [];
+  let openBranch = null;
 
   document.getElementById('person-count').textContent = data.people.length;
 
@@ -33,7 +38,7 @@
     const caption = document.createElement('small');
     caption.textContent = id === focusId ? 'במרכז העץ' : person.deceased ? 'לזכרו/ה' : kind === 'partner' ? 'בן/בת זוג' : 'למעבר לענף';
     button.append(name, caption);
-    button.addEventListener('click', () => select(id));
+    button.addEventListener('click', () => select(id, true, true));
     return button;
   }
 
@@ -88,7 +93,7 @@
     tree.prepend(svg);
   }
 
-  function render() {
+  function renderTree() {
     const id = focusId;
     const directParents = parents(id);
     const grandparents = sort(directParents.flatMap(parents));
@@ -103,8 +108,6 @@
     addRow('במרכז המשפחה · בני זוג ואחים', middle, ownPartners);
     addRow('דור הילדים', ownChildren);
     addRow('דור הנכדים', grandchildren);
-    document.getElementById('focus-name').textContent = people.get(id).name;
-    document.getElementById('focus-info').textContent = people.get(id).deceased ? 'לזכרו/ה' : '';
     requestAnimationFrame(() => {
       drawLines();
       const card = tree.querySelector('.person.focus');
@@ -113,14 +116,147 @@
     });
   }
 
+  function element(tag, className, label) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (label !== undefined) node.textContent = label;
+    return node;
+  }
+
+  function personButton(id, subtitle) {
+    const button = element('button', 'relative-card');
+    button.type = 'button';
+    const name = element('strong', '', people.get(id).name);
+    const meta = element('span', 'relative-meta', subtitle || (people.get(id).deceased ? 'לזכרו/ה' : 'לצפייה במשפחה'));
+    button.append(name, meta, element('span', 'relative-arrow', '←'));
+    button.addEventListener('click', () => select(id, true, true));
+    return button;
+  }
+
+  function section(title, ids, subtitle) {
+    if (!ids.length) return null;
+    const box = element('section', 'relation-section');
+    const heading = element('div', 'relation-heading');
+    heading.append(element('h3', '', title), element('span', 'relation-count', String(ids.length)));
+    const list = element('div', 'relative-list');
+    for (const id of ids) list.append(personButton(id, subtitle));
+    box.append(heading, list);
+    return box;
+  }
+
+  function navigation() {
+    const wrap = element('div', 'person-navigation');
+    if (trail.length > 1) {
+      const back = element('button', 'back-person', '→ חזרה אל ' + people.get(trail[trail.length - 2]).name);
+      back.type = 'button';
+      back.addEventListener('click', () => {
+        trail.pop();
+        focusId = trail[trail.length - 1];
+        openBranch = null;
+        history.replaceState(null, '', '#' + encodeURIComponent(focusId));
+        render();
+      });
+      wrap.append(back);
+    }
+    return wrap;
+  }
+
+  function renderCard() {
+    const id = focusId;
+    cardView.replaceChildren();
+    cardView.append(navigation());
+    const hero = element('div', 'person-hero');
+    hero.append(element('span', 'hero-kicker', 'המשפחה של'), element('h2', '', people.get(id).name));
+    if (people.get(id).deceased) hero.append(element('span', 'memory-label', 'לזכרו/ה'));
+    cardView.append(hero);
+    const relations = element('div', 'relations-grid');
+    for (const group of [
+      section('הורים', parents(id)),
+      section('בני ובנות זוג', sort(partners(id))),
+      section('אחים ואחיות', siblings(id)),
+      section('ילדים', sort(children(id))),
+    ]) if (group) relations.append(group);
+    if (!relations.children.length) relations.append(element('p', 'no-relations', 'אין עדיין קשרים נוספים לאדם הזה בעץ.'));
+    cardView.append(relations);
+  }
+
+  function addBranch(key, title, description, ids, label) {
+    if (!ids.length) return;
+    const folder = element('div', 'branch-folder');
+    const trigger = element('button', 'branch-trigger');
+    trigger.type = 'button';
+    trigger.setAttribute('aria-expanded', String(openBranch === key));
+    trigger.append(element('span', 'folder-symbol', '⌁'));
+    const wording = element('span', 'branch-wording');
+    wording.append(element('strong', '', title), element('small', '', description));
+    trigger.append(wording, element('span', 'folder-count', String(ids.length)), element('span', 'folder-chevron', openBranch === key ? '⌃' : '⌄'));
+    trigger.addEventListener('click', () => { openBranch = openBranch === key ? null : key; renderBranches(); });
+    folder.append(trigger);
+    if (openBranch === key) {
+      const list = element('div', 'branch-contents');
+      for (const id of ids) list.append(personButton(id, label));
+      folder.append(list);
+    }
+    branchesView.append(folder);
+  }
+
+  function renderBranches() {
+    const id = focusId;
+    branchesView.replaceChildren();
+    branchesView.append(navigation());
+    const intro = element('div', 'branches-intro');
+    intro.append(element('span', 'hero-kicker', 'יוצאים מהמשפחה של'), element('h2', '', people.get(id).name), element('p', '', 'בחרו ענף, ואז אדם להמשך המסע.'));
+    branchesView.append(intro);
+    const directParents = parents(id);
+    for (const parentId of directParents) {
+      const next = sort(unique([parentId, ...parents(parentId), ...siblings(parentId)]));
+      addBranch('parent-' + parentId, 'הענף של ' + people.get(parentId).name, 'הדור הקודם והמשפחה שלו', next);
+    }
+    const partnerIds = sort(partners(id));
+    for (const partnerId of partnerIds) {
+      const next = sort(unique([partnerId, ...children(id).filter(childId => ownFamilies(id).some(family => family.parents.includes(partnerId) && family.children.includes(childId)))]));
+      addBranch('partner-' + partnerId, 'המשפחה עם ' + people.get(partnerId).name, 'בן/בת זוג והילדים המשותפים', next);
+    }
+    const ownChildren = sort(children(id));
+    const listedChildren = new Set(ownFamilies(id).filter(family => family.parents.some(parentId => partnerIds.includes(parentId))).flatMap(family => family.children));
+    const otherChildren = ownChildren.filter(childId => !listedChildren.has(childId));
+    if (otherChildren.length) addBranch('children', 'הדור הבא', 'ילדים והמשך המשפחה', otherChildren);
+    const ownSiblings = siblings(id);
+    addBranch('siblings', 'אחים ואחיות', 'המשפחות שצמחו מאותו דור', ownSiblings);
+    if (!branchesView.querySelector('.branch-folder')) branchesView.append(element('p', 'no-relations', 'אין עדיין ענפים נוספים לאדם הזה בעץ. אפשר לחפש מישהו אחר למעלה.'));
+  }
+
+  function render() {
+    document.getElementById('focus-name').textContent = people.get(focusId).name;
+    document.getElementById('focus-info').textContent = people.get(focusId).deceased ? 'לזכרו/ה' : '';
+    if (activeView === 'card') renderCard();
+    if (activeView === 'branches') renderBranches();
+    if (activeView === 'tree') renderTree();
+  }
+
+  function setView(view) {
+    activeView = view;
+    for (const button of document.querySelectorAll('.view-tab')) {
+      const selected = button.dataset.view === view;
+      button.setAttribute('aria-selected', String(selected));
+      document.getElementById('panel-' + button.dataset.view).hidden = !selected;
+    }
+    render();
+  }
+
   function hideResults() {
     results.hidden = true;
     search.setAttribute('aria-expanded', 'false');
   }
 
-  function select(id, updateHash = true) {
+  function select(id, updateHash = true, remember = false) {
     if (!people.has(id)) return;
     focusId = id;
+    if (remember) {
+      const existing = trail.indexOf(id);
+      trail = existing >= 0 ? trail.slice(0, existing + 1) : [...trail, id];
+    } else trail = [id];
+    openBranch = null;
     search.value = '';
     hideResults();
     render();
@@ -160,8 +296,9 @@
     }
   });
   document.addEventListener('click', event => { if (!event.target.closest('.search-wrap')) hideResults(); });
+  for (const button of document.querySelectorAll('.view-tab')) button.addEventListener('click', () => setView(button.dataset.view));
   document.getElementById('reset').addEventListener('click', () => select(initialId));
-  window.addEventListener('resize', drawLines);
+  window.addEventListener('resize', () => { if (activeView === 'tree') drawLines(); });
   window.addEventListener('hashchange', () => select(decodeURIComponent(location.hash.slice(1)), false));
   select(people.has(decodeURIComponent(location.hash.slice(1))) ? decodeURIComponent(location.hash.slice(1)) : initialId, false);
 })();
