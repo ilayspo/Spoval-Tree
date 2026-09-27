@@ -2,7 +2,7 @@ window.loadFamilyData = async function () {
   const fallback = window.FAMILY_DATA;
   const config = window.SUPABASE_CONFIG;
   if (!config?.url || !config?.key) return fallback;
-  const headers = { apikey: config.key, Authorization: `Bearer ${config.key}` };
+  const headers = { apikey: config.key };
   try {
     const endpoint = config.url.replace(/\/$/, '') + '/rest/v1/';
     const [peopleResponse, familiesResponse, membersResponse] = await Promise.all([
@@ -14,7 +14,7 @@ window.loadFamilyData = async function () {
     const [people, units, members] = await Promise.all([peopleResponse.json(), familiesResponse.json(), membersResponse.json()]);
     if (!people.length) throw Error('No family data');
     return {
-      people: people.map(person => ({ ...person, photo_url: person.photo_path ? `${config.url}/storage/v1/object/public/family-photos/${person.photo_path.split('/').map(encodeURIComponent).join('/')}` : null })),
+      people: people.map(person => ({ ...person, photo_url: person.photo_path ? `${config.url}/storage/v1/object/public/${person.photo_path.split('/').map(encodeURIComponent).join('/')}` : null })),
       families: units.map(unit => ({ ...unit, parents: members.filter(member => member.family_id === unit.id && member.role === 'parent').map(member => member.person_id), children: members.filter(member => member.family_id === unit.id && member.role === 'child').map(member => member.person_id) }))
     };
   } catch (error) { console.warn('Family database unavailable; showing last published snapshot.', error); return fallback; }

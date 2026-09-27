@@ -46,7 +46,7 @@
     form.elements.deceased.checked=!!person?.deceased;
     $('editor-title').textContent=person ? 'עריכת פרופיל' : 'הוספת אדם';
     $('photo-input').value=''; const preview=$('photo-preview'); preview.hidden=!person?.photo_path;
-    if (person?.photo_path) preview.src=base+'/storage/v1/object/public/family-photos/'+person.photo_path.split('/').map(encodeURIComponent).join('/');
+    if (person?.photo_path) preview.src=base+'/storage/v1/object/public/'+person.photo_path.split('/').map(encodeURIComponent).join('/');
     drawList();
   }
   $('login').addEventListener('submit', async e => {
@@ -66,8 +66,8 @@
       if (file) {
         if (!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024) throw Error('יש לבחור JPG, PNG או WebP עד 5 MB.');
         const ext={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type];
-        photo_path=id+'/'+crypto.randomUUID()+'.'+ext;
-        await api('/storage/v1/object/family-photos/'+photo_path,{method:'POST',body:file,headers:{'Content-Type':file.type}});
+        photo_path='family-photos/'+id+'/'+crypto.randomUUID()+'.'+ext;
+        await api('/storage/v1/object/'+photo_path,{method:'POST',body:file,headers:{'Content-Type':file.type}});
       }
       const record={id,name_he:f.elements.name_he.value.trim(),name_ru:f.elements.name_ru.value.trim(),deceased:f.elements.deceased.checked,photo_path,updated_at:new Date().toISOString()};
       await api('/rest/v1/family_people'+(existing?'?id=eq.'+encodeURIComponent(id):''), {method:existing?'PATCH':'POST',body:JSON.stringify(existing?Object.fromEntries(Object.entries(record).filter(([key])=>key!=='id')):record),headers:{Prefer:'return=minimal'}});
